@@ -12,7 +12,7 @@ import{GoogleMapsModule} from '@angular/google-maps';
 
 export class MapsComponent {
 
-   map: google.maps.Map | null = null;
+   map: google.maps.Map |  null = null;
 
    constructor() {
     this.map = {} as google.maps.Map;
