@@ -1,0 +1,24 @@
+/* Marker container */
+.custom-marker {
+  display: inline-block;
+  width: 50px;   /* Adjust size as needed */
+  height: 50px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Image inside the marker */
+.custom-marker img {
+  width: 100%;
+  height: 100%;
+  outline: none;   /* Remove focus outline */
+  border: none;    /* Remove border */
+  cursor: pointer; /* Pointer on hover */
+  user-select: none; /* Prevent image selection */
+  display: block;
+}
+
+/* Hover effect: slightly scale and shadow */
+.custom-marker:hover img {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}

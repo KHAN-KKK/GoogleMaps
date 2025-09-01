@@ -13,21 +13,36 @@ import { GoogleMapsModule } from '@angular/google-maps';
 export class MapsComponent {
 
   map: google.maps.Map | null = null;
+  intersectionObserver!: IntersectionObserver;
 
   constructor() {
-    this.map = {} as google.maps.Map;
+    this.map = {} as google.maps.Map; //24.4195189803987 New Lng: 54.48674469890857  //24.419395667362135 New Lng: 54.48701347891938
   }
 
-  lat = 24.419497;  //--24.419497 54.486835
-  lng = 54.486835;
+  //RABDNA SLIP WAY 24.392070  54.513670
+  //--24.419497 54.486835  RABDAN WET 
+  //rabdan 24.4195189, lng: 54.4867446  //24.4193956, lng: 54.4870134 rabdan slip
+  lat = 24.392070;
+  lng =  54.513670;
   center = { lat: this.lat, lng: this.lng };
   marker: any;
   markerlistener: any;
 
   berths = [
-    { lat: 24.12, lng: 54.65, status: 'available' },
-    { lat: 24.121, lng: 54.651, status: 'booked' },
+   // { id: 1, lat: 24.4195189, lng: 54.4867446, status: 'booked', angle: 176 },
+   // { id: 2, lat: 24.419353267, lng: 54.4870232, status: 'booked', angle: -3 },
+    { id: 1, lat: 24.3923937, lng: 54.5139377, status: 'booked', angle: 0 },
+    { id: 2, lat: 24.3923821, lng: 54.5139879, status: 'booked', angle: 0 },
+    { id: 3, lat: 24.3923675, lng: 54.5140329, status: 'booked', angle: -2 },
+    { id: 4, lat: 24.3923518, lng: 54.5140758, status: 'booked', angle: -2 },
+    { id: 5, lat: 24.3923391, lng: 54.5141253, status: 'booked', angle: -2 },
+    { id: 6, lat: 24.3924058, lng: 54.5138926, status: 'booked', angle: 0 },
+     {id: 7, lat: 24.3921908, lng: 54.5136703, status: 'booked', angle: 215 },  
   ];
+
+  //24.392413129306018 New Lng: 54.5138426736107
+  //24.419353267347905 New Lng: 54.48702323473909
+
 
   async initMap() {
     const { Map } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
@@ -38,68 +53,126 @@ export class MapsComponent {
     this.map = new Map(mapEl, {
       center: location,
       zoom: 20,
-      mapId: '4504f8b37365c3d0'
+      mapId: '4504f8b37365c3d0', 
+      mapTypeId: google.maps.MapTypeId.SATELLITE,
+      scrollwheel : false,
+      scaleControl : false,
     });
 
     await this.addMarker(location);
+
+    // this.map.addListener('zoom_changed', () => {
+    //   if (this.map) {
+    //     const zoom = this.map.getZoom() || 18;
+    //     const scale = this.getScaleForZoom(zoom);
+    //     document.querySelectorAll('.custom-marker').forEach(el => {
+    //       (el as HTMLElement).style.transform = `scale(${scale})`;
+    //     });
+    //   }
+    // });
+
+
   }
 
   async addMarker(location: any) {
     //const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
     const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
-
-    // const markerPin = new PinElement({
-    //   background: "blue",
-    //   scale: 2,
-    //   borderColor: "white",
-    //   glyphColor: "red",
-    // });
+    const pinElement = new PinElement();
+    const el = pinElement.element;
 
     const markerIcon = document.createElement('img');
-    markerIcon.src = 'assets/BerthHighlighted.svg';
+    markerIcon.src = 'assets/Berth.svg';
     markerIcon.height = 100;
     markerIcon.width = 40;
-
-    // this.markerlistener = this.marker.addListener("dragend", (event: any) => {
-    // console.log(event.LatLng.lat(), event.LatLng.lng());
-    // this.marker.position = event.LatLng;
-    // this.map?.panTo(this.marker.position);
-    // });
 
     this.berths.forEach(b => {
       // Create a new DOM element for this marker
       const el = document.createElement('div');
-      el.style.width = '50px';
-      el.style.height = '50px';
+   
+      el.className = 'custom-marker';
+      //el.style.width = '45px';
+      //el.style.height = '130px';
 
       const img = document.createElement('img');
       img.src = b.status === 'booked' ? 'assets/boat.svg' : 'assets/Berth.svg';
-      img.style.width = '100%';
-      img.style.height = '100%';
+      img.style.width = '100px';
+      img.style.height = '100px';
+      img.style.transform = `rotate(${b.angle || 0}deg)`;
+      img.style.transition = 'transform 0.3s ease';
 
       el.appendChild(img);
 
       // Create AdvancedMarkerElement with this unique element
-      new AdvancedMarkerElement({
+      const marker = new AdvancedMarkerElement({
         position: { lat: b.lat, lng: b.lng },
         map: this.map,
-        content: el
+        content: el,
+        gmpDraggable: true
       });
+
+      console.log('Marker created for:', b.lat, b.lng);
+
+      marker.addListener('dragend', (event: google.maps.MapMouseEvent) => {
+        if (event.latLng) {
+          const lat = event.latLng.lat();
+          const lng = event.latLng.lng();
+          console.log('New Lat:', lat, 'New Lng:', lng,);
+          this.map?.panTo(event.latLng);
+          //alert(`Marker moved to: \nLat: ${lat}\nLng: ${lng}`);
+        }
+      });
+
+      marker.addListener('click', (event: google.maps.MapMouseEvent) => {
+        if (this.marker.getAnimation() !== null) {
+          this.marker.setAnimation(null);
+        } else {
+          this.marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+      });
+
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.classList.remove('drop');
+        el.style.opacity = '1';
+      }, 2500);
+
+      el.addEventListener('click', () => {
+        el.classList.add('slide-in'); // or slide-in, rotate, etc.
+        setTimeout(() => {
+          el.classList.remove('slide-in');
+        }, 2000); // remove after 2s
+      });
+
+      this.intersectionObserver.observe(el);
     });
-
-
-
-
-    //  this.marker = new AdvancedMarkerElement({
-    //   map: this.map,
-    //   position: location,
-    //   gmpDraggable: true,
-    //   content : markerIcon,
-    //content : markerPin.element,
-    // });
   }
+
+  getScaleForZoom(zoom: number): number {
+    const baseZoom = 18; // Your default zoom
+    const baseScale = 1; // Original size at baseZoom
+    return baseScale * Math.pow(1.2, (zoom - baseZoom));
+  }
+
+
 
   ngAfterViewInit() {
     this.initMap();
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('drop');
+          this.intersectionObserver.unobserve(entry.target);
+        }
+      }
+    });
   }
+
+  // toggleBounce() {
+  //   if (this.marker.getAnimation() !== null) {
+  //     this.marker.setAnimation(null);
+  //   } else {
+  //     this.marker.setAnimation(google.maps.Animation.BOUNCE);
+  //   }
+  // }
+
 }

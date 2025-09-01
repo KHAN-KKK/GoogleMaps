@@ -1,2 +1,58 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+
+ @keyframes drop {
+  0% {
+    transform: translateX(-0px) translateY(200PX) scaleX(0.9) scaleY(0.9);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(0px) scaleY(1);
+    opacity: 1;
+  }
+  65% {
+    transform: translateY(-17px) scaleY(0.9);
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-22px) scaleY(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0px) scaleY(1);
+    opacity: 1;
+  }
+}
+.drop {
+  /*animation: drop 0.3s linear forwards 1.5s;  */
+  animation: drop 2s ease-out forwards;
+} 
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.pulse {
+  animation: pulse 1s ease-in-out;
+}
+
+@keyframes slideIn {
+  0% { transform: translateY(-100px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.slide-in {
+  animation: slideIn 1s ease-out;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.rotate {
+  animation: rotate 0.7s linear;
+}

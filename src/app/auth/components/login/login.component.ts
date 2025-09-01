@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
 
 
   onSubmit() : void{
-    this.route.navigate(['/dash']);
+    this.route.navigate(['/map']);
     console.log('Form Submitted');
     if (this.loginForm.valid) {
       this.submit = true;
