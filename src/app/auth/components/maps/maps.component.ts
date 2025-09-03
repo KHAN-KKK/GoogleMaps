@@ -95,7 +95,7 @@ export class MapsComponent {
 
       const img = document.createElement('img');
       img.src = b.status === 'booked' ? 'assets/boat.svg' : 'assets/Berth.svg';
-      img.style.width = '100px';
+      img.style.width = '40px';
       img.style.height = '100px';
       img.style.transform = `rotate(${b.angle || 0}deg)`;
       img.style.transition = 'transform 0.3s ease';
@@ -167,12 +167,5 @@ export class MapsComponent {
     });
   }
 
-  // toggleBounce() {
-  //   if (this.marker.getAnimation() !== null) {
-  //     this.marker.setAnimation(null);
-  //   } else {
-  //     this.marker.setAnimation(google.maps.Animation.BOUNCE);
-  //   }
-  // }
 
 }
