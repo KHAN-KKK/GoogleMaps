@@ -1,0 +1,167 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  column-gap: 10%;
+  margin: 0% 6%;
+  height: 100%;
+}
+
+.basecontainer {
+  display: flex;
+  margin-top: 1%;
+  width: 100%;
+  align-items: center;
+}
+
+.item1 {
+  flex: 1 1 57%;
+}
+
+.item2 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2%;
+  flex: 1 1 11%;
+}
+
+.bordered-table {
+  width: 100%;
+  border-collapse: separate;
+  /* important */
+  border-spacing: 0;
+  /* remove spacing between cells */
+  font-size: 14px;
+  table-layout: fixed;
+  overflow: hidden;
+  /* clip content to border radius */
+  margin-top: 1%;
+
+  th,
+  td {
+    border: 1px solid #d8d8da;
+    padding: 8px 12px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    background-color: #fff;
+  }
+
+  th {
+    background-color: #14c5bd;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  /* Apply border radius to first and last header cells */
+  th:first-child {
+    border-top-left-radius: 12px;
+  }
+
+  th:last-child {
+    border-top-right-radius: 12px;
+  }
+
+}
+
+
+
+
+.full-table {
+  width: 100%;
+}
+
+.bordered-table1 {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  /* important */
+  border-spacing: 0;
+  border-radius: 12px;
+  font-size: 14px;
+
+  th,
+  td {
+    border: 1px solid #d8d8da;
+    padding: 8px 12px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    background-color: #fff;
+  }
+
+  th {
+    font-weight: bold;
+    color: #fff;
+  }
+
+  /* Apply border radius to first and last data row cells */
+  tr:last-child td:first-child {
+    border-bottom-left-radius: 12px;
+  }
+
+  tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
+  }
+}
+
+.summary-row {
+  td {
+    text-align: center;
+    background-color: #fff;
+  }
+}
+
+.sub {
+  td {
+    text-align: center;
+    background-color: #14c5bd;;
+    color: #fff;
+  }
+}
+
+.grand-total-row {
+  background-color:#14c5bd;
+
+  td {
+    color: #fff;
+  }
+}
+
+.description-cell .description-text {
+  font-weight: bold;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+  padding: 0px 12px;
+  line-height: 0%;
+  /* reduce vertical padding */
+  /* or whatever suits */
+}
+
+::ng-deep .mat-select-trigger {
+  min-height: 36px;
+  
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper .mat-mdc-form-field-bottom-align ::before {
+  box-sizing: border-box;
+  width: 100%;
+  position: fixed;
+  height: 0px;
+}
+
+:host ::ng-deep .mat-mdc-select-value  {
+  text-align: center;
+}
+
+:host ::ng-deep .mat-mdc-form-field-input-control   {
+  text-align: center;
+}
+

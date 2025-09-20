@@ -1,0 +1,175 @@
+<div class="mainContainer mt-5">
+  <h3>Cost Estimate</h3>
+  <hr>
+
+  <!-- Main Form and Table -->
+  <form [formGroup]="costForm">
+    <!-- Top Container -->
+    <div class="basecontainer">
+      <div class="item1">
+        <h4>Berthing Fee (AED)</h4>
+      </div>
+
+      <div class="item2">
+        <!-- Agreed Annual Increase -->
+        <div>
+          @if(leasingType === 'retail-leasing'){
+          <mat-label>Agreed Annual Increase in %</mat-label>
+          <mat-form-field appearance="outline" class="d-flex justify-content-around">
+            <input matInput type="number" formControlName="agreedIncrease" min="0" max="100" step="1" />
+            <!-- <span matSuffix>%</span> -->
+          </mat-form-field>
+
+          <mat-error *ngIf="costForm.get('agreedIncrease')?.hasError('min')">
+            Minimum allowed value is 0
+          </mat-error>
+          <mat-error *ngIf="costForm.get('agreedIncrease')?.hasError('max')">
+            Maximum allowed value is 100
+          </mat-error>
+          }
+        </div>
+
+        <!-- Mode of Payment -->
+        <div class="flex " style="width: 220px;">
+          <mat-label>Mode of Payment</mat-label>
+          <mat-form-field appearance="outline" class="ml-2">
+            <mat-select (openedChange)="onDropdownOpen($event)">
+              <mat-option *ngFor="let mode of modeOfPayments" [value]="mode">{{ mode }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <table mat-table [dataSource]="costItems" class="full-table bordered-table ">
+
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell class="description-cell" *matCellDef="let item">
+          <span class="description-text">{{ item.label }}</span>
+          <div *ngIf="item.label === 'Berthing Fees' && dateRangeMessage" class="description-note" style="color: red;">
+            (No of days : {{ dateRangeMessage }})
+          </div>
+        </td>
+
+      </ng-container>
+      <!-- Unit Column -->
+      <ng-container matColumnDef="unit">
+        <th mat-header-cell *matHeaderCellDef>Unit</th>
+        <td mat-cell *matCellDef="let item">
+          <mat-form-field appearance="outline">
+            <mat-select [formControlName]="item.unitControl" (openedChange)="onDropdownOpen($event)">
+              <mat-option *ngFor="let option of item.unitOptions" [value]="option">{{ option }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <!-- Rate Column -->
+      <ng-container matColumnDef="rate">
+        <th mat-header-cell *matHeaderCellDef>Rate</th>
+        <td mat-cell *matCellDef="let item">
+          <mat-form-field appearance="outline">
+            <input matInput type="number" [formControlName]="item.rateControl" (wheel)="disableScroll($event)" />
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <!-- Total Column -->
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef>Total (AED)</th>
+        <td mat-cell *matCellDef="let item">
+          {{ getTotal(item.totalKey) | number: '1.0-2' }}
+        </td>
+      </ng-container>
+
+      <!-- Table Header and Row Definition -->
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+
+    <!-- Summary Table (after 6th row) -->
+    <div *ngIf="costItems.length > 3">
+      <table class="full-table  bordered-table1 mt-0">
+
+        <!-- Subtotal 1-->
+        <tr class="summary-row sub description-cell">
+          <td class="description-text">Sub-Total 1</td>
+          <td colspan="2"></td>
+          <td><strong>{{ formTotals.subTotal1 | number: '1.0-2' }} AED</strong></td>
+        </tr>
+
+        <!-- VAT -->
+        <tr class="summary-row description-cell ">
+          <td class="description-text">VAT</td>
+          <td>
+            <mat-form-field appearance="outline">
+              <mat-select formControlName="vatUnit" disableRipple>
+                <mat-option value="%">%</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field appearance="outline">
+              <input matInput type="number" formControlName="vatRate" />
+            </mat-form-field>
+          </td>
+          <td>{{ formTotals.vat | number: '1.0-2' }} AED</td>
+        </tr>
+
+
+
+        <!-- Security Deposit -->
+        <tr class="summary-row description-cell">
+          <td class="description-text">Security Deposit as 3 months of Rental Fee</td>
+          <td>
+            <mat-form-field appearance="outline">
+              <mat-select formControlName="securityDepositUnit" disableRipple>
+                <mat-option value="Fixed">Fixed</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field appearance="outline">
+              <input matInput type="number" formControlName="securityDepositRate" (wheel)="disableScroll($event)" />
+            </mat-form-field>
+          </td>
+          <td>{{ formTotals.securityDeposit | number: '1.0-2' }} AED</td>
+        </tr>
+
+        <!-- Subtotal 2-->
+        <tr class="summary-row sub description-cell">
+          <td class="description-text">Sub-Total 2</td>
+          <td colspan="2"></td>
+          <td><strong>{{ formTotals.subTotal2 | number: '1.0-2' }} AED</strong></td>
+        </tr>
+
+         <!-- Document Charges -->
+        <tr class="summary-row description-cell ">
+          <td class="description-text">
+            Online Service Charge**</td>
+          <td>
+            <mat-form-field appearance="outline">
+              <mat-select formControlName="docsUnit" disableRipple>
+                <mat-option value="Fixed">Fixed</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+          <td>
+            <mat-form-field appearance="outline">
+              <input matInput type="number" formControlName="docsRate" (wheel)="disableScroll($event)" />
+            </mat-form-field>
+          </td>
+          <td>{{ formTotals.docs | number: '1.2-4' }} AED</td>
+        </tr>
+
+        <!-- Grand Total -->
+        <tr class="summary-row sub grand-total-row description-cell">
+          <td class="description-text">Grand Total</td>
+          <td colspan="2"></td>
+          <td><strong>{{ formTotals.grandTotal | number: '1.2-4' }} AED</strong></td>
+        </tr>
+      </table>
+    </div>
+  </form>
+</div>

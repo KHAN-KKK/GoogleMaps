@@ -16,6 +16,10 @@ export const Authroutes: Routes = [
         loadComponent: () => import('../components/login/login.component').then(m => m.LoginComponent)
     },
     {
+        path: 'payment',
+        loadComponent: () => import('../components/payment/payment.component').then(m => m.PaymentComponent)
+    },
+    {
         path: '',
         loadComponent: () => import('../components/maps/maps.component').then(m => m.MapsComponent)
     },

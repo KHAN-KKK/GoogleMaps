@@ -1,16 +1,24 @@
 import { Component } from '@angular/core';
-
+import {MarinaBerth} from '../../../models/MarinaBerth';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { CommonModule } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-maps',
-  imports: [GoogleMapsModule],
+  imports: [GoogleMapsModule, CommonModule, MatTooltipModule],
   templateUrl: './maps.component.html',
   styleUrl: './maps.component.css'
 })
 
 
 export class MapsComponent {
+  highlightedBerthIds: any[] = [];
+  allBerths: any[] = [];
+  selectedBerth: MarinaBerth | null = null;
+  isBerthHighligthted: boolean = false;
+  hoveredItem = null;
+
 
   map: google.maps.Map | null = null;
   intersectionObserver!: IntersectionObserver;
@@ -23,21 +31,21 @@ export class MapsComponent {
   //--24.419497 54.486835  RABDAN WET 
   //rabdan 24.4195189, lng: 54.4867446  //24.4193956, lng: 54.4870134 rabdan slip
   lat = 24.392070;
-  lng =  54.513670;
+  lng = 54.513670;
   center = { lat: this.lat, lng: this.lng };
   marker: any;
   markerlistener: any;
 
   berths = [
-   // { id: 1, lat: 24.4195189, lng: 54.4867446, status: 'booked', angle: 176 },
-   // { id: 2, lat: 24.419353267, lng: 54.4870232, status: 'booked', angle: -3 },
-    { id: 1, lat: 24.3923937, lng: 54.5139377, status: 'booked', angle: 0 },
-    { id: 2, lat: 24.3923821, lng: 54.5139879, status: 'booked', angle: 0 },
-    { id: 3, lat: 24.3923675, lng: 54.5140329, status: 'booked', angle: -2 },
-    { id: 4, lat: 24.3923518, lng: 54.5140758, status: 'booked', angle: -2 },
-    { id: 5, lat: 24.3923391, lng: 54.5141253, status: 'booked', angle: -2 },
-    { id: 6, lat: 24.3924058, lng: 54.5138926, status: 'booked', angle: 0 },
-     {id: 7, lat: 24.3921908, lng: 54.5136703, status: 'booked', angle: 215 },  
+    // { id: 1, lat: 24.4195189, lng: 54.4867446, status: 'booked', angle: 176 },
+    // { id: 2, lat: 24.419353267, lng: 54.4870232, status: 'booked', angle: -3 },
+    { Id: 1,Berth:'A-1', lat: 24.3923937, lng: 54.5139377,BerthLength : '8m', status: 'booked',IsActive : true, IsBooked : true,  angle: 0 },
+    { Id: 2,Berth:'A-2', lat: 24.3923821, lng: 54.5139879,BerthLength : '16m',status: 'booked',IsActive : true, IsBooked : true,  angle: 0 },
+    { Id: 3,Berth:'B-1', lat: 24.3923675, lng: 54.5140329,BerthLength : '8m', status: 'booked',IsActive : true, IsBooked : false,  angle: -2 },
+    { Id: 4,Berth:'B-2', lat: 24.3923518, lng: 54.5140758,BerthLength : '4m', status: 'booked',IsActive : true, IsBooked : true,  angle: -2 },
+    { Id: 5,Berth:'B-3', lat: 24.3923391, lng: 54.5141253,BerthLength : '8m', status: 'booked',IsActive : true, IsBooked : true,  angle: -2 },
+    { Id: 6,Berth:'A-4', lat: 24.3924058, lng: 54.5138926,BerthLength : '10m',status: 'booked',IsActive : false, IsBooked : false,  angle: 0 },
+    { Id: 7,Berth:'B-4', lat: 24.3921908, lng: 54.5136703,BerthLength : '8m', status: 'booked',IsActive : true, IsBooked : true,  angle: 215 },
   ];
 
   //24.392413129306018 New Lng: 54.5138426736107
@@ -53,14 +61,14 @@ export class MapsComponent {
     this.map = new Map(mapEl, {
       center: location,
       zoom: 20,
-      mapId: '4504f8b37365c3d0', 
+      mapId: '4504f8b37365c3d0',
       mapTypeId: google.maps.MapTypeId.SATELLITE,
-      scrollwheel : false,
-      scaleControl : false,
+      scrollwheel: false,
+      scaleControl: false,
     });
 
     await this.addMarker(location);
-
+    this.allBerths = this.berths;
     // this.map.addListener('zoom_changed', () => {
     //   if (this.map) {
     //     const zoom = this.map.getZoom() || 18;
@@ -88,7 +96,7 @@ export class MapsComponent {
     this.berths.forEach(b => {
       // Create a new DOM element for this marker
       const el = document.createElement('div');
-   
+
       el.className = 'custom-marker';
       //el.style.width = '45px';
       //el.style.height = '130px';
@@ -165,6 +173,24 @@ export class MapsComponent {
         }
       }
     });
+  }
+
+  onMarkerClick(berth: any) {
+
+    this.selectedBerth = this.selectedBerth?.Id === berth.Id ? null : berth;
+    if (this.selectedBerth) {
+      const newCenter = { lat: this.selectedBerth.Latitude, lng: this.selectedBerth.Longitude };
+      this.map?.panTo(newCenter);
+      //marker.marker?.setAnimation(google.maps.Animation.BOUNCE);
+
+      //   setTimeout(() => {
+      //   marker.marker?.setAnimation(null);
+      // }, 700);
+
+      this.isBerthHighligthted = this.highlightedBerthIds.includes(berth.Id);
+
+    }
+    this.highlightedBerthIds = [];  // this will remove the highlighted berths if the user clicks on berth
   }
 
 
